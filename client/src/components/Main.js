@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Saved from "./Saved";
 import Search from "./Search";
 import Results from "./Results";
+// Import apikey to be referred to as 'API'
 import API from "../utils/api";
 
 class Main extends Component {

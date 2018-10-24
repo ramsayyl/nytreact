@@ -1,15 +1,17 @@
-// Dependecies
-const express = require("express");
+// Require Dependecies express, mongoose, body-parser, bluebird, path
+const express = require('express');
 const mongoose = require("mongoose");
 const bluebird = require("bluebird");
 const bodyParser = require("body-parser");
 const path = require("path");
 
+
 // Set up a default port, configure mongoose, configure our middleware
 const PORT = process.env.PORT || 3001;
 mongoose.Promise = bluebird;
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(bodyParser.urlencoded({ entended: true }));
 app.use(bodyParser.json());
 
 // Serve up static assets if in production (running on Heroku)
@@ -27,37 +29,38 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routing
-var articlesController = require("./server/controllers/article-controller");
+
+//Routing -- Requires CRUD function for article collection from controllers
+var articlesController = require('./server/controllers/article-controller.js');
 var router = new express.Router();
-// Define any API routes first
-// Get saved articles
+
+
+//Define API routes, GET/POST to read/create saved articles
+// GET saved
 router.get("/api/saved", articlesController.find);
-// Save articles
+// POST saved
 router.post("/api/saved", articlesController.insert);
-// delete saved articles
-router.delete("/api/saved/:id", articlesController.delete);
-// Send every other request to the React app
-router.get("/*", function(req, res) {
+//DELETE saved
+router.delete("api/saved/:id", articlesController.delete);
+// Send every other request to React app
+router.get("/*", function(req, res){
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
+// Ensure the express app actually uses the routes
 app.use(router);
 
-// Connect mongoose to our database
-const db = process.env.MONGODB_URI || "mongodb://localhost/nyt-react";
+// Connect mongoose to our database && create new database 'nytreact if non existent'
+const db = process.env.MONGODB_URI || "mongodb://localhost/nytreact";
+
 mongoose.connect(db, function(error) {
-  // Log any errors connecting with mongoose
-  if (error) {
+  if(error) {
     console.error(error);
-  }
-  // Or log a success message
-  else {
-    console.log("mongoose connection is successful");
+  } else {
+    console.log('SUCCESSFUL DATABASE CONNECTION');
   }
 });
 
-// Start the server
 app.listen(PORT, function() {
-  console.log(`🌎 ==> Server now on port ${PORT}!`);
-});
+  console.log(`Server running on port ==> ${PORT}`);
+})
